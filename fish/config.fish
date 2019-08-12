@@ -17,42 +17,46 @@ alias "ga"="git add "
 alias "gd"="git diff "
 
 
-function show_list
-	set i 0
-	echo "--0-- exit" 
-	for line in (git status -s)
-		set i (math $i + 1 )
-		echo "--$i-- $line"
-	end
-end
-
-function gst
-	show_list
-	read -P "Which command? " command 
-	if test "$command" = "0"
-		return
-	end
-	read -P "Which line number? " number
-	if test "$number" != "0" 
-		set git_list (git status -s)
-		eval $command (string split " " -- $git_list[$number])[3]
-	  gst		
-	end
-end
-
 function _gd
   clear
   git diff $argv
   git status
-	git pull
-end 
+        git pull
+end
 
 function _ga
   clear
   git pull
   git add $argv
   git status
-end 
+end
+
+function show_list
+        set i 0
+        echo "--0-- exit"
+        for line in (git status -s)
+                set is_added  (string split " " -- $line)[1]
+                if test "$is_added" != "M"
+                        set i (math $i + 1 )
+                        echo "--$i-- $line"
+                end
+        end
+end
+
+function gst
+        show_list
+        read -P "Which command? " command
+        if test "$command" = "0"
+                return
+        end
+        read -P "Which line number? " number
+        if test "$number" != "0"
+                set git_list (git status -s)
+                eval $command (string split " " -- $git_list[$number])[3]
+          gst
+        end
+end
+
 
 function g-co
 	git pull
